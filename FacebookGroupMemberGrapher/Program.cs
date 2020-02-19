@@ -11,7 +11,8 @@ namespace FacebookGroupMemberGrapher
     {
         static readonly Regex ADDED_REGEX = new Regex("^Added by (.*) (Today|Yesterday|on (.*))$");
         static readonly Regex JOINED_REGEX = new Regex("^Joined (.*)$");
-        static List<string> Names = new List<string>();
+        static List<string> AllNames = new List<string>(); // All names ever encountered; used to know when to create vertices
+        static Dictionary<string, int> NameNumber = new Dictionary<string, int>();
         const string OUTPUT_EXTENSION = "dot";
         const string MESSAGE_LITERAL = "Message";
 
@@ -51,10 +52,32 @@ namespace FacebookGroupMemberGrapher
             while (!fp.EndOfStream)
             {
                 var name = ReadLine(fp);
-                if (!Names.Contains(name))
+                if (!NameNumber.ContainsKey(name))
+                {
+                    NameNumber.Add(name, 1);
+                }
+                else
+                {
+                    Console.Error.WriteLine($"WARNING! Duplicate name: {name}");
+                    /*
+                     * Unfortunately, Facebook doesn't allow us to distinguish between multiple
+                     * people with the same name in this list, even if we were to parse the
+                     * page's HTML – we could distinguish between people when they are added
+                     * (because Facebook displays their image and link), but we could NOT
+                     * distinguish between them when they add someone (because then it only shows the
+                     * person's name, nothing else).
+                     * 
+                     * So we do the best we can: we just add another node for this person, and we're
+                     * done with it.
+                     */
+
+                    NameNumber[name]++;
+                    name = name + "@" + NameNumber[name];
+                }
+                if (!AllNames.Contains(name))
                 {
                     graph.AddVertex(name);
-                    Names.Add(name);
+                    AllNames.Add(name);
                 }
 
                 Console.Write($"{++i}. {name}");
@@ -66,10 +89,10 @@ namespace FacebookGroupMemberGrapher
                     {
                         var addedBy = addedMatch.Groups[1].Value;
                         Console.WriteLine(" was added by " + addedBy);
-                        if (!Names.Contains(addedBy))
+                        if (!AllNames.Contains(addedBy))
                         {
                             graph.AddVertex(addedBy);
-                            Names.Add(addedBy);
+                            AllNames.Add(addedBy);
                         }
                         graph.AddEdge(new Edge<string>(addedBy, name));
                         break;
@@ -94,6 +117,7 @@ namespace FacebookGroupMemberGrapher
                     if (groupFounder.Equals(message))
                     {
                         // We reached the end of the list, the founder is always last
+                        Console.WriteLine($"{++i}. {groupFounder} was here first.");
                         return graph;
                     }
                 }
