@@ -49,8 +49,10 @@ Short answer: as best it can.
 
 Facebook shows group additions like so:
 
+```
 Jane Doe
 Added by John Doe yesterday
+```
 
 Jane Doe is listed with her full details (image, profile link, short info). If we parsed the HTML content instead of the plain text representation, we could distinguish between two accounts with the name Jane Doe. On the other hand, John Doe is only shown as plain text – even in the HTML source. There is nothing distinguishable between two people named John Doe when they *add* people to the group.
 
