@@ -42,3 +42,18 @@ Using the app is a little cumbersome, but that's the price you pay in order to a
 1. Execute the app using the following syntax: `dotnet run --no-build "founder" "file"`, where `founder` is the founder's name, and `file` is the full path and filename of the text file you saved before
 1. If everything works out, you should get the list of members in the console, and a new file with the same path and filename as your text file, but with extension DOT.
 1. Use a graph rendering tool to render your DOT file.
+
+# How does it handle duplicate names?
+
+Short answer: as best it can.
+
+Facebook shows group additions like so:
+
+Jane Doe
+Added by John Doe yesterday
+
+Jane Doe is listed with her full details (image, profile link, short info). If we parsed the HTML content instead of the plain text representation, we could distinguish between two accounts with the name Jane Doe. On the other hand, John Doe is only shown as plain text – even in the HTML source. There is nothing distinguishable between two people named John Doe when they *add* people to the group.
+
+Since there's no way of knowing who added a certain person to the group, that means we don't really care to ever distinguish between duplicate accounts – it doesn't matter that you can distinguish between incoming nodes if you can't distinguish the outgoing nodes on an edge.
+
+So the solution I implemented was this: all Jane Does are separate nodes, but all outgoing references use the first instance of Jane Doe that was encountered. The names in the labels are Jane Doe, Jane Doe@2, Jane Doe@3, etc. The code is not testing if it generates new duplicates by appending these indices because I was lazy.
