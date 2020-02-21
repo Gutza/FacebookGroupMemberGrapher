@@ -30,7 +30,6 @@ Using the app is a little cumbersome, but that's the price you pay in order to a
 1. Above "All Members" there's a dropdown which defaults to "Default" – change it to "Join Date"
 1. Scroll down until you reach the very end. Facebook loads the list in increments, this is tedious and takes time. I use the End key repeatedly, I find it easier than scrolling using the mouse wheel.
 1. The last person you see should be the founder of the group. Even if the founder has left the group, we'll call the last person in the list the founder for the rest of this document.
-1. Copy the founder's name and save it separately for future reference (you will need it later)
 1. Click once somewhere in the founder's details, after his name; DO NOT CLICK ANYWHERE AGAIN UNTIL THIS DOCUMENT TELLS YOU OTHERWISE!
 1. Notice that you are a monkey who takes orders from a document; take a couple of moments to contemplate on that
 1. Scroll back up to the top
@@ -39,9 +38,15 @@ Using the app is a little cumbersome, but that's the price you pay in order to a
 1. Make sure the first thing in the text document is the name of the newest member in the group (your clipboard will contain some clutter at the top)
 1. Save the text file, and save its full path separately for future reference
 1. Open a command line console, go to the folder where you saved these sources, and [build the project](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build) – you should be able to simply execute `dotnet build` with no parameters
-1. Execute the app using the following syntax: `dotnet run --no-build "founder" "file"`, where `founder` is the founder's name, and `file` is the full path and filename of the text file you saved before
+1. Execute the app using the following syntax: `dotnet run --no-build "file"`, where `file` is the full path and filename of the text file you saved before
 1. If everything works out, you should get the list of members in the console, and a new file with the same path and filename as your text file, but with extension DOT.
 1. Use a graph rendering tool to render your DOT file.
+
+# But does it scale?
+
+Yes, it scales reasonably well. I tested it on a +20K group, and it worked perfectly.
+The only hard limitation I encountered was Facebook's unwillingness to share data on more than roughly 10K users (see below);
+apart from that, everything worked out perfectly.
 
 # Known limitations
 

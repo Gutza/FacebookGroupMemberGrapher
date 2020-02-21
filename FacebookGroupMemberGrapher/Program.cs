@@ -19,13 +19,13 @@ namespace FacebookGroupMemberGrapher
         static int Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8;
-            if (args.Length != 2)
+            if (args.Length != 1)
             {
-                Console.Error.WriteLine("Please provide exactly two parameters -- the Facebook name of the founder and the filename to analyze.");
+                Console.Error.WriteLine("Please provide exactly one parameter -- the filename to analyze.");
                 return 1;
             }
 
-            var fileName = args[1];
+            var fileName = args[0];
             if (!File.Exists(fileName))
             {
                 Console.Error.WriteLine("File " + fileName + " was not found.");
@@ -33,9 +33,7 @@ namespace FacebookGroupMemberGrapher
             }
             Console.WriteLine("Processing " + fileName);
 
-            var groupFounder = args[0];
-
-            var graph = ProcessFile(fileName, groupFounder);
+            var graph = ProcessFile(fileName);
             var outputFilename = Path.ChangeExtension(fileName, OUTPUT_EXTENSION);
             var writer = File.CreateText(outputFilename);
             new GraphToDotConverter().Convert(writer, graph, new AttributesProvider());
@@ -44,7 +42,7 @@ namespace FacebookGroupMemberGrapher
 
             return 0;
         }
-        private static Graph<string> ProcessFile(string fileName, string groupFounder)
+        private static Graph<string> ProcessFile(string fileName)
         {
             var graph = new Graph<string>();
             var fp = File.OpenText(fileName);
@@ -108,17 +106,14 @@ namespace FacebookGroupMemberGrapher
 
                 while (true)
                 {
+                    if (fp.EndOfStream)
+                    {
+                        break;
+                    }
                     var message = ReadLine(fp);
                     if (MESSAGE_LITERAL.Equals(message))
                     {
                         break;
-                    }
-
-                    if (groupFounder.Equals(message))
-                    {
-                        // We reached the end of the list, the founder is always last
-                        Console.WriteLine($"{++i}. {groupFounder} was here first.");
-                        return graph;
                     }
                 }
             }
