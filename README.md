@@ -43,6 +43,14 @@ Using the app is a little cumbersome, but that's the price you pay in order to a
 1. If everything works out, you should get the list of members in the console, and a new file with the same path and filename as your text file, but with extension DOT.
 1. Use a graph rendering tool to render your DOT file.
 
+# Known limitations
+
+1. Duplicate people's names in the group are handled poorly, but that's on Facebook (see below)
+1. There's a limit of roughly 10K people you can ever see in the history, but that's also on Facebook(*)
+1. You miss parts of the history when people leave the group and then re-join; this is partly on Facebook, but also partly on this app, because it currently only allows you to process a single snapshot of the history(*)
+
+(*) For both these reasons, I suggest you save multiple versions of your group's history as text files. Perhaps this app will, in a future version; perhaps you will – just don't lose that history, because you might not get it back.
+
 # How does it handle duplicate names?
 
 Short answer: as best it can.
