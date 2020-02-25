@@ -1,4 +1,6 @@
-﻿using Graphviz4Net.Dot;
+﻿using CommandLine;
+using CommandLine.Text;
+using Graphviz4Net.Dot;
 using Graphviz4Net.Graphs;
 using System;
 using System.Collections.Generic;
@@ -15,17 +17,33 @@ namespace FacebookGroupMemberGrapher
         static Dictionary<string, int> NameNumber = new Dictionary<string, int>();
         const string OUTPUT_EXTENSION = "dot";
         const string MESSAGE_LITERAL = "Message";
+        public static CLIOptions MainOptions = new CLIOptions();
 
-        static int Main(string[] args)
+        static int Main(string[] args) => Parser.Default.ParseArguments<CLIOptions>(args)
+                .MapResult(
+                    (opts) => Run(opts),
+                    errs => Help(errs)
+                );
+
+        [Usage(ApplicationAlias = "FacebookGroupMemberGrapher")]
+        public static IEnumerable<Example> Examples
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            if (args.Length != 1)
+            get
             {
-                Console.Error.WriteLine("Please provide exactly one parameter -- the filename to analyze.");
-                return 1;
+                yield return new Example("Main example", new CLIOptions { });
             }
+        }
 
-            var fileName = args[0];
+        private static int Help(IEnumerable<Error> obj)
+        {
+            return 1;
+        }
+
+        private static int Run(CLIOptions options)
+        {
+            MainOptions = options;
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            var fileName = options.Filename;
             if (!File.Exists(fileName))
             {
                 Console.Error.WriteLine("File " + fileName + " was not found.");
@@ -42,6 +60,7 @@ namespace FacebookGroupMemberGrapher
 
             return 0;
         }
+
         private static Graph<string> ProcessFile(string fileName)
         {
             var graph = new Graph<string>();
@@ -139,9 +158,14 @@ namespace FacebookGroupMemberGrapher
     {
         IDictionary<string, string> IAttributesProvider.GetVertexAttributes(object vertex)
         {
+            var label = "";
+            if (!Program.MainOptions.Anonymize)
+            {
+                label = vertex as string;
+            }
             return new Dictionary<string, string>()
             {
-                {  "label", vertex as string }
+                {  "label", label }
             };
         }
     }
